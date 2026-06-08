@@ -20,14 +20,18 @@ export function RecordForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sourceText }),
       });
-      const payload = (await response.json()) as { log?: { id: string }; error?: string };
+      const payload = (await response.json()) as {
+        id?: string;
+        log?: { id?: string };
+        error?: string;
+      };
+      const logId = payload.id ?? payload.log?.id;
 
-      if (!response.ok || !payload.log) {
+      if (!response.ok || !logId) {
         throw new Error(payload.error || "学びログを保存できませんでした。");
       }
 
-      router.push(`/logs/${payload.log.id}`);
-      router.refresh();
+      router.push(`/logs/${logId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "学びログを保存できませんでした。");
     } finally {

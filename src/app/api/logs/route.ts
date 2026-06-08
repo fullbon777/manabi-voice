@@ -57,5 +57,8 @@ export async function POST(request: Request) {
     },
   });
 
-  return Response.json({ log: { ...toLearningLogView(log), ...analysis } }, { status: 201 });
+  return Response.json(
+    { id: log.id, log: { ...toLearningLogView(log), ...analysis } },
+    { status: 201 },
+  );
 }
