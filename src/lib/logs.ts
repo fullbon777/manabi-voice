@@ -4,6 +4,7 @@ import type {
   AiInspection,
   AssessmentStatus,
   InterventionType,
+  LearningNote,
   LearningLogView,
 } from "@/lib/types";
 
@@ -15,6 +16,29 @@ function asStringArray(value: unknown) {
   return Array.isArray(value)
     ? value.filter((item): item is string => typeof item === "string")
     : [];
+}
+
+function asLearningNote(value: unknown, fallback: string): LearningNote {
+  if (
+    typeof value === "object" &&
+    value !== null &&
+    "noteBody" in value &&
+    "footnotes" in value
+  ) {
+    const note = value as { noteBody: unknown; footnotes: unknown };
+
+    if (typeof note.noteBody === "string") {
+      return {
+        noteBody: note.noteBody,
+        footnotes: asStringArray(note.footnotes),
+      };
+    }
+  }
+
+  return {
+    noteBody: fallback,
+    footnotes: [],
+  };
 }
 
 function deriveAssessmentStatus(sourceText: string): AssessmentStatus {
@@ -70,6 +94,7 @@ export function toLearningLogView(log: {
   date: string;
   sourceText: string;
   reconstructedContent: string;
+  learningNote: unknown;
   claims: unknown;
   vagueButNatural: unknown;
   needsClarification: unknown;
@@ -90,6 +115,7 @@ export function toLearningLogView(log: {
     sourceText: log.sourceText,
     assessmentStatus,
     interventionType,
+    learningNote: asLearningNote(log.learningNote, log.reconstructedContent),
     reconstructedContent: log.reconstructedContent,
     claims: asInspectionArray(log.claims) as AiInspection["claims"],
     vagueButNatural: asInspectionArray(log.vagueButNatural) as AiInspection["vagueButNatural"],

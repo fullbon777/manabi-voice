@@ -16,9 +16,15 @@ export type InterventionType =
   | "extend_or_complete"
   | "cautious_follow_up";
 
+export type LearningNote = {
+  noteBody: string;
+  footnotes: string[];
+};
+
 export type AiInspection = {
   assessmentStatus: AssessmentStatus;
   interventionType: InterventionType;
+  learningNote: LearningNote;
   reconstructedContent: string;
   claims: InspectionItem[];
   vagueButNatural: InspectionItem[];

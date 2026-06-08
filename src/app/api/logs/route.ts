@@ -39,6 +39,7 @@ export async function POST(request: Request) {
       date: parsed.data.date ?? getTodayDateString(),
       sourceText: parsed.data.sourceText,
       reconstructedContent: analysis.reconstructedContent,
+      learningNote: analysis.learningNote,
       claims: analysis.claims,
       vagueButNatural: analysis.vagueButNatural,
       needsClarification: analysis.needsClarification,

@@ -1,4 +1,10 @@
-import type { AiInspection, AssessmentStatus, InspectionItem, InterventionType } from "@/lib/types";
+import type {
+  AiInspection,
+  AssessmentStatus,
+  InspectionItem,
+  InterventionType,
+  LearningNote,
+} from "@/lib/types";
 
 const claimMarkers = ["です", "である", "だった", "になる", "される", "できる"];
 const vagueMarkers = ["それ", "これ", "なんか", "いろいろ", "すごく", "ちゃんと", "多分"];
@@ -101,6 +107,40 @@ function getExplanation(status: AssessmentStatus) {
     default:
       return "これは mock 点検です。大筋は説明できている可能性がある一方で、曖昧さ、説明不足、条件の不足が残る状態として扱います。確認質問で先に考える余地を残し、その後に正しい答えと、今日話した範囲に対する詳しい解説を返す想定です。外部検索や実 API は使っていません。";
   }
+}
+
+function getLearningNote({
+  assessmentStatus,
+  normalized,
+  sentences,
+}: {
+  assessmentStatus: AssessmentStatus;
+  normalized: string;
+  sentences: string[];
+}): LearningNote {
+  const scopeSentences = sentences.length > 0 ? sentences.slice(0, 3) : [normalized];
+  const baseText = scopeSentences.join(" ");
+  const noteBody =
+    "今日の範囲では、" +
+    baseText +
+    (baseText.endsWith("。") ? "" : "。") +
+    "この説明は、話した内容の中心を残しながら、学んだことをあとで読み返せる形に整えた理解ノートです。前提や条件が足りないところは、今日扱った範囲を外へ広げすぎないように補うと、理解の輪郭がはっきりします。具体例を書くなら、最後に一つだけ短く添えるくらいで十分です。";
+
+  const footnotes: string[] = [];
+
+  if (assessmentStatus === "major_misunderstanding") {
+    footnotes.push("※ 誤解を示す表現があるため、正しい前提に置き換えて読み直してください。");
+  }
+
+  if (assessmentStatus === "uncertain") {
+    footnotes.push("※ 入力が短いため、対象、理由、使う場面の補足が必要です。");
+  }
+
+  if (assessmentStatus === "mostly_correct_with_gaps") {
+    footnotes.push("※ 大筋は残せますが、条件や理由を一文足すと理解ノートとして安定します。");
+  }
+
+  return { noteBody, footnotes };
 }
 
 function getReviewQuestions(status: AssessmentStatus) {
@@ -226,10 +266,12 @@ export function createMockAnalysis(sourceText: string): AiInspection {
         ];
 
   const explanation = getExplanation(assessmentStatus);
+  const learningNote = getLearningNote({ assessmentStatus, normalized, sentences });
 
   return {
     assessmentStatus,
     interventionType,
+    learningNote,
     reconstructedContent:
       `話した内容を、意味を落とさずに復元します。${normalized}` +
       (normalized.endsWith("。") ? "" : "。"),

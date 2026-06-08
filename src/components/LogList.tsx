@@ -25,7 +25,7 @@ export function LogList({ logs }: { logs: LearningLogView[] }) {
                 {formatDateTime(log.createdAt)}
               </p>
               <h2 className="mt-1 line-clamp-2 text-lg font-semibold text-zinc-950">
-                {log.reconstructedContent}
+                {log.learningNote.noteBody}
               </h2>
             </div>
             <span className="shrink-0 border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-800">

@@ -29,31 +29,54 @@ export default async function LogDetailPage({ params }: { params: Promise<{ id: 
         </div>
       </div>
 
-      <section className="border border-zinc-200 bg-white p-5">
-        <p className="text-sm font-medium text-zinc-500">復元内容</p>
-        <p className="mt-3 text-lg leading-8 text-zinc-950">{log.reconstructedContent}</p>
+      <section className="border border-zinc-200 bg-white p-6">
+        <p className="text-sm font-medium text-emerald-700">今日の理解ノート</p>
+        <p className="mt-4 whitespace-pre-wrap text-lg leading-8 text-zinc-950">
+          {log.learningNote.noteBody}
+        </p>
+        {log.learningNote.footnotes.length > 0 ? (
+          <ul className="mt-5 space-y-2 border-t border-zinc-200 pt-4">
+            {log.learningNote.footnotes.map((footnote) => (
+              <li className="text-sm leading-6 text-zinc-600" key={footnote}>
+                {footnote}
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </section>
 
-      <AssessmentSummary
-        assessmentStatus={log.assessmentStatus}
-        interventionType={log.interventionType}
-      />
+      <details className="border border-zinc-200 bg-white p-5">
+        <summary className="cursor-pointer text-lg font-semibold text-zinc-950">点検詳細</summary>
+        <div className="mt-5 flex flex-col gap-6">
+          <section className="border border-zinc-200 bg-white p-5">
+            <p className="text-sm font-medium text-zinc-500">復元内容</p>
+            <p className="mt-3 text-sm leading-7 text-zinc-700">{log.reconstructedContent}</p>
+          </section>
 
-      <section className="border border-zinc-200 bg-white p-5">
-        <p className="text-sm font-medium text-zinc-500">元の入力</p>
-        <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-zinc-700">{log.sourceText}</p>
-      </section>
+          <AssessmentSummary
+            assessmentStatus={log.assessmentStatus}
+            interventionType={log.interventionType}
+          />
 
-      <InspectionSections log={log} />
+          <section className="border border-zinc-200 bg-white p-5">
+            <p className="text-sm font-medium text-zinc-500">元の入力</p>
+            <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-zinc-700">
+              {log.sourceText}
+            </p>
+          </section>
 
-      <QuestionList questions={log.checkQuestions} title="確認質問" />
+          <InspectionSections log={log} />
 
-      <section className="border border-zinc-200 bg-white p-5">
-        <h2 className="text-lg font-semibold text-zinc-950">詳しい解説</h2>
-        <p className="mt-3 text-sm leading-7 text-zinc-700">{log.explanation}</p>
-      </section>
+          <QuestionList questions={log.checkQuestions} title="確認質問" />
 
-      <QuestionList questions={log.reviewQuestions} title="復習用の問い" />
+          <section className="border border-zinc-200 bg-white p-5">
+            <h2 className="text-lg font-semibold text-zinc-950">詳しい解説</h2>
+            <p className="mt-3 text-sm leading-7 text-zinc-700">{log.explanation}</p>
+          </section>
+
+          <QuestionList questions={log.reviewQuestions} title="復習用の問い" />
+        </div>
+      </details>
     </main>
   );
 }

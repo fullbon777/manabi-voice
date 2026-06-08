@@ -17,6 +17,7 @@ model LearningLog {
   date                     String
   sourceText               String
   reconstructedContent     String
+  learningNote             Json?
   claims                   Json
   vagueButNatural          Json
   needsClarification       Json

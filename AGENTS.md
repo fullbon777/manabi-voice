@@ -20,6 +20,11 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - Do not commit `.env`.
 - Use TypeScript.
 - Run lint and build checks after meaningful changes.
+- `npm run build` may be run with elevated permissions when the environment requires it.
+- Turbopack errors containing `creating new process`, `binding to a port`, and `Operation not permitted (os error 1)` should be treated as sandbox permission errors, not app code errors.
+- In that case, rerun `npm run build` with elevated permissions once.
+- Do not change app code only to work around that build sandbox error.
+- Do not loop build runs.
 
 ## Product direction
 
