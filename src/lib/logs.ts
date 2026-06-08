@@ -41,6 +41,58 @@ function asLearningNote(value: unknown, fallback: string): LearningNote {
   };
 }
 
+function titleFromLearningNote(value: unknown, fallback: string) {
+  if (typeof value === "object" && value !== null && "title" in value) {
+    const note = value as { title: unknown };
+
+    if (typeof note.title === "string" && note.title.trim().length > 0) {
+      return note.title;
+    }
+  }
+
+  return fallback.slice(0, 40) || "学びログ";
+}
+
+function assessmentStatusFromLearningNote(
+  value: unknown,
+  fallback: AssessmentStatus,
+): AssessmentStatus {
+  if (typeof value === "object" && value !== null && "assessmentStatus" in value) {
+    const note = value as { assessmentStatus: unknown };
+
+    if (
+      note.assessmentStatus === "major_misunderstanding" ||
+      note.assessmentStatus === "mostly_correct_with_gaps" ||
+      note.assessmentStatus === "well_understood" ||
+      note.assessmentStatus === "uncertain"
+    ) {
+      return note.assessmentStatus;
+    }
+  }
+
+  return fallback;
+}
+
+function interventionTypeFromLearningNote(
+  value: unknown,
+  fallback: InterventionType,
+): InterventionType {
+  if (typeof value === "object" && value !== null && "interventionType" in value) {
+    const note = value as { interventionType: unknown };
+
+    if (
+      note.interventionType === "explain_first" ||
+      note.interventionType === "question_then_explain" ||
+      note.interventionType === "extend_or_complete" ||
+      note.interventionType === "cautious_follow_up"
+    ) {
+      return note.interventionType;
+    }
+  }
+
+  return fallback;
+}
+
 function deriveAssessmentStatus(sourceText: string): AssessmentStatus {
   const normalized = sourceText.trim().replace(/\s+/g, " ");
   const sentences = normalized
@@ -106,10 +158,18 @@ export function toLearningLogView(log: {
   createdAt: Date;
   updatedAt: Date;
 }): LearningLogView {
-  const assessmentStatus = deriveAssessmentStatus(log.sourceText);
-  const interventionType = deriveInterventionType(assessmentStatus);
+  const derivedAssessmentStatus = deriveAssessmentStatus(log.sourceText);
+  const assessmentStatus = assessmentStatusFromLearningNote(
+    log.learningNote,
+    derivedAssessmentStatus,
+  );
+  const interventionType = interventionTypeFromLearningNote(
+    log.learningNote,
+    deriveInterventionType(assessmentStatus),
+  );
 
   return {
+    title: titleFromLearningNote(log.learningNote, log.sourceText),
     id: log.id,
     date: log.date,
     sourceText: log.sourceText,
@@ -117,6 +177,10 @@ export function toLearningLogView(log: {
     interventionType,
     learningNote: asLearningNote(log.learningNote, log.reconstructedContent),
     reconstructedContent: log.reconstructedContent,
+    understoodPoints: asInspectionArray(log.claims) as AiInspection["understoodPoints"],
+    possibleMisunderstandings: asInspectionArray(
+      log.needsClarification,
+    ) as AiInspection["possibleMisunderstandings"],
     claims: asInspectionArray(log.claims) as AiInspection["claims"],
     vagueButNatural: asInspectionArray(log.vagueButNatural) as AiInspection["vagueButNatural"],
     needsClarification: asInspectionArray(log.needsClarification) as AiInspection["needsClarification"],
@@ -127,6 +191,7 @@ export function toLearningLogView(log: {
     checkQuestions: asStringArray(log.checkQuestions),
     explanation: log.groundedExplanation,
     groundedExplanation: log.groundedExplanation,
+    nextReviewQuestions: asStringArray(log.reviewQuestions),
     reviewQuestions: asStringArray(log.reviewQuestions),
     createdAt: log.createdAt,
     updatedAt: log.updatedAt,

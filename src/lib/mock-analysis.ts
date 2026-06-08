@@ -267,14 +267,31 @@ export function createMockAnalysis(sourceText: string): AiInspection {
 
   const explanation = getExplanation(assessmentStatus);
   const learningNote = getLearningNote({ assessmentStatus, normalized, sentences });
+  const title = anchor.slice(0, 40) || "mock点検ログ";
+  const possibleMisunderstandings =
+    assessmentStatus === "major_misunderstanding"
+      ? needsClarification.length > 0
+        ? needsClarification
+        : [
+            makeItem(
+              "誤解の可能性",
+              "入力に誤解や逆転を示す表現が含まれています。",
+              "正しい前提を確認してから復習してください。",
+            ),
+          ]
+      : [];
+  const reviewQuestions = getReviewQuestions(assessmentStatus);
 
   return {
+    title,
     assessmentStatus,
     interventionType,
     learningNote,
     reconstructedContent:
       `話した内容を、意味を落とさずに復元します。${normalized}` +
       (normalized.endsWith("。") ? "" : "。"),
+    understoodPoints: claims,
+    possibleMisunderstandings,
     claims,
     vagueButNatural,
     needsClarification,
@@ -283,6 +300,7 @@ export function createMockAnalysis(sourceText: string): AiInspection {
     checkQuestions: getCheckQuestions(assessmentStatus, anchor),
     explanation,
     groundedExplanation: explanation,
-    reviewQuestions: getReviewQuestions(assessmentStatus),
+    nextReviewQuestions: reviewQuestions,
+    reviewQuestions,
   };
 }

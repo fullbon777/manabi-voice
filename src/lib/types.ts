@@ -22,10 +22,13 @@ export type LearningNote = {
 };
 
 export type AiInspection = {
+  title: string;
   assessmentStatus: AssessmentStatus;
   interventionType: InterventionType;
   learningNote: LearningNote;
   reconstructedContent: string;
+  understoodPoints: InspectionItem[];
+  possibleMisunderstandings: InspectionItem[];
   claims: InspectionItem[];
   vagueButNatural: InspectionItem[];
   needsClarification: InspectionItem[];
@@ -34,6 +37,7 @@ export type AiInspection = {
   checkQuestions: string[];
   explanation: string;
   groundedExplanation: string;
+  nextReviewQuestions: string[];
   reviewQuestions: string[];
 };
 
