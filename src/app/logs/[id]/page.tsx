@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { InspectionSections, QuestionList } from "@/components/InspectionSections";
+import { AssessmentSummary, InspectionSections, QuestionList } from "@/components/InspectionSections";
 import { formatDateTime } from "@/lib/date";
 import { getLogById } from "@/lib/logs";
 
@@ -34,6 +34,11 @@ export default async function LogDetailPage({ params }: { params: Promise<{ id: 
         <p className="mt-3 text-lg leading-8 text-zinc-950">{log.reconstructedContent}</p>
       </section>
 
+      <AssessmentSummary
+        assessmentStatus={log.assessmentStatus}
+        interventionType={log.interventionType}
+      />
+
       <section className="border border-zinc-200 bg-white p-5">
         <p className="text-sm font-medium text-zinc-500">元の入力</p>
         <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-zinc-700">{log.sourceText}</p>
@@ -44,11 +49,11 @@ export default async function LogDetailPage({ params }: { params: Promise<{ id: 
       <QuestionList questions={log.checkQuestions} title="確認質問" />
 
       <section className="border border-zinc-200 bg-white p-5">
-        <h2 className="text-lg font-semibold text-zinc-950">根拠つき説明</h2>
-        <p className="mt-3 text-sm leading-7 text-zinc-700">{log.groundedExplanation}</p>
+        <h2 className="text-lg font-semibold text-zinc-950">詳しい解説</h2>
+        <p className="mt-3 text-sm leading-7 text-zinc-700">{log.explanation}</p>
       </section>
 
-      <QuestionList questions={log.reviewQuestions} title="復習質問" />
+      <QuestionList questions={log.reviewQuestions} title="復習用の問い" />
     </main>
   );
 }

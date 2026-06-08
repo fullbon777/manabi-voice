@@ -14,7 +14,7 @@ export default async function Home() {
           <p className="text-sm font-medium text-emerald-700">今日の学びログ</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-normal text-zinc-950">{today}</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600">
-            保存済みの学びを、復元内容と点検項目つきで確認します。ここでは要約ではなく、理解の穴を見つけるためのログを扱います。
+            保存済みの学びを、復元内容、点検結果、確認質問、詳しい解説つきで確認します。ここでは要約ではなく、理解を深めるためのログを扱います。
           </p>
         </div>
         <Link className="bg-emerald-700 px-4 py-3 text-sm font-semibold text-white" href="/record">

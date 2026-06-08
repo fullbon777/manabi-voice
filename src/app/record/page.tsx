@@ -11,7 +11,7 @@ export default function RecordPage() {
             学びログを作成
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600">
-            入力した内容を、意味を落とさず復元し、曖昧さ、説明不足、正誤確認候補、確認質問に分けて保存します。
+            自分の言葉で説明した内容を点検し、理解状態に応じて確認質問、詳しい解説、復習用の問いに分けて保存します。
           </p>
         </div>
         <Link className="border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700" href="/">
