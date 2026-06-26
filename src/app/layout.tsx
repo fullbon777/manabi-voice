@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Manabi Voice",
-  description: "Spoken learning inspection log in mock mode.",
+  description: "Spoken learning diary with understanding inspection.",
 };
 
 export default function RootLayout({
@@ -21,11 +21,8 @@ export default function RootLayout({
               Manabi Voice
             </Link>
             <nav className="flex items-center gap-2 text-sm">
-              <Link className="px-3 py-2 text-zinc-700 hover:bg-zinc-100" href="/">
-                今日
-              </Link>
               <Link className="px-3 py-2 text-zinc-700 hover:bg-zinc-100" href="/record">
-                作成
+                日誌を書く
               </Link>
             </nav>
           </div>

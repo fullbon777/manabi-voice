@@ -236,7 +236,7 @@ export function RecordForm() {
       </section>
 
       <label className="grid gap-2">
-        <span className="text-sm font-medium text-zinc-800">学んだこと</span>
+        <span className="text-sm font-medium text-zinc-800">今日の学び</span>
         <textarea
           className="min-h-72 resize-y border border-zinc-300 bg-white p-4 text-base leading-7 text-zinc-950 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
           maxLength={12000}
@@ -254,7 +254,7 @@ export function RecordForm() {
           disabled={isSubmitting || sourceText.trim().length === 0}
           type="submit"
         >
-          {isSubmitting ? "点検して保存中" : "点検して保存"}
+          {isSubmitting ? "日誌に残しています" : "点検して日誌に残す"}
         </button>
       </div>
       {error ? (
