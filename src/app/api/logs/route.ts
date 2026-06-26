@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
+import { createAiInspection } from "@/lib/analysis";
 import { getLogsByDate, toLearningLogView } from "@/lib/logs";
-import { createMockAnalysis } from "@/lib/mock-analysis";
 import { prisma } from "@/lib/prisma";
 import { getTodayDateString, isDateString } from "@/lib/date";
 
@@ -33,12 +33,19 @@ export async function POST(request: Request) {
     );
   }
 
-  const analysis = createMockAnalysis(parsed.data.sourceText);
+  const date = parsed.data.date ?? getTodayDateString();
+  const analysis = await createAiInspection(parsed.data.sourceText, date);
   const log = await prisma.learningLog.create({
     data: {
-      date: parsed.data.date ?? getTodayDateString(),
+      date,
       sourceText: parsed.data.sourceText,
       reconstructedContent: analysis.reconstructedContent,
+      learningNote: {
+        ...analysis.learningNote,
+        title: analysis.title,
+        assessmentStatus: analysis.assessmentStatus,
+        interventionType: analysis.interventionType,
+      },
       claims: analysis.claims,
       vagueButNatural: analysis.vagueButNatural,
       needsClarification: analysis.needsClarification,
@@ -50,5 +57,8 @@ export async function POST(request: Request) {
     },
   });
 
-  return Response.json({ log: toLearningLogView(log) }, { status: 201 });
+  return Response.json(
+    { id: log.id, log: { ...toLearningLogView(log), ...analysis } },
+    { status: 201 },
+  );
 }

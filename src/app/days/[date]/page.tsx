@@ -20,7 +20,7 @@ export default async function DayPage({ params }: { params: Promise<{ date: stri
           <p className="text-sm font-medium text-emerald-700">日付ページ</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-normal text-zinc-950">{date}</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600">
-            この日に保存した学びログを表示します。
+            この日に保存した学びログを、今日の理解ノートと点検詳細つきで表示します。
           </p>
         </div>
         <Link className="bg-emerald-700 px-4 py-3 text-sm font-semibold text-white" href="/record">

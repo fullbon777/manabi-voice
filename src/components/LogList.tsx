@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { formatDateTime } from "@/lib/date";
-import type { LearningLogView } from "@/lib/types";
+import type { AssessmentStatus, LearningLogView } from "@/lib/types";
 
 export function LogList({ logs }: { logs: LearningLogView[] }) {
   if (logs.length === 0) {
@@ -25,11 +25,11 @@ export function LogList({ logs }: { logs: LearningLogView[] }) {
                 {formatDateTime(log.createdAt)}
               </p>
               <h2 className="mt-1 line-clamp-2 text-lg font-semibold text-zinc-950">
-                {log.reconstructedContent}
+                {log.learningNote.noteBody}
               </h2>
             </div>
             <span className="shrink-0 border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-800">
-              点検 {inspectionCount(log)} 件
+              {assessmentLabel[log.assessmentStatus]} / 点検 {inspectionCount(log)} 件
             </span>
           </div>
           <p className="mt-3 line-clamp-2 text-sm leading-6 text-zinc-600">{log.sourceText}</p>
@@ -47,3 +47,10 @@ function inspectionCount(log: LearningLogView) {
     log.factCheckTargets.length
   );
 }
+
+const assessmentLabel: Record<AssessmentStatus, string> = {
+  major_misunderstanding: "先に解説",
+  mostly_correct_with_gaps: "確認質問",
+  well_understood: "発展・完了",
+  uncertain: "追加確認",
+};
