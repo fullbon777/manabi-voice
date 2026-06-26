@@ -207,6 +207,28 @@ export async function getLogsByDate(date: string) {
   return logs.map(toLearningLogView);
 }
 
+export async function getRecentLogs(take = 12) {
+  const logs = await prisma.learningLog.findMany({
+    orderBy: { createdAt: "desc" },
+    take,
+  });
+
+  return logs.map(toLearningLogView);
+}
+
+export async function getLogDates() {
+  const dates = await prisma.learningLog.groupBy({
+    by: ["date"],
+    _count: { date: true },
+    orderBy: { date: "desc" },
+  });
+
+  return dates.map((date) => ({
+    date: date.date,
+    count: date._count.date,
+  }));
+}
+
 export async function getLogById(id: string) {
   const log = await prisma.learningLog.findUnique({ where: { id } });
 

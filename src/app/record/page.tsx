@@ -8,14 +8,17 @@ export default function RecordPage() {
         <div>
           <p className="text-sm font-medium text-emerald-700">学び入力</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-normal text-zinc-950">
-            学びログを作成
+            学び日誌を書く
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600">
-            自分の言葉で説明した内容を点検し、今日の理解ノートと点検詳細に分けて保存します。
+            今日学んだことを自分の言葉で残します。話した内容をもとに、理解ノートと復習の手がかりを日誌にします。
           </p>
         </div>
-        <Link className="border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700" href="/">
-          今日
+        <Link
+          className="border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700"
+          href="/logs"
+        >
+          読み返す
         </Link>
       </div>
       <section className="border border-zinc-200 bg-zinc-50 p-5">

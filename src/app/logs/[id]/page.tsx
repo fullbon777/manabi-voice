@@ -13,12 +13,12 @@ export default async function LogDetailPage({ params }: { params: Promise<{ id: 
         <div>
           <p className="text-sm font-medium text-emerald-700">{formatDateTime(log.createdAt)}</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-normal text-zinc-950">
-            学びログ詳細
+            学び日誌
           </h1>
         </div>
         <div className="flex gap-2">
-          <Link className="border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700" href="/">
-            今日
+          <Link className="border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700" href="/record">
+            日誌を書く
           </Link>
           <Link
             className="border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700"
@@ -30,7 +30,8 @@ export default async function LogDetailPage({ params }: { params: Promise<{ id: 
       </div>
 
       <section className="border border-zinc-200 bg-white p-6">
-        <p className="text-sm font-medium text-emerald-700">今日の理解ノート</p>
+        <p className="text-sm font-medium text-emerald-700">理解ノート</p>
+        <h2 className="mt-2 text-xl font-semibold text-zinc-950">{log.title}</h2>
         <p className="mt-4 whitespace-pre-wrap text-lg leading-8 text-zinc-950">
           {log.learningNote.noteBody}
         </p>
@@ -46,7 +47,9 @@ export default async function LogDetailPage({ params }: { params: Promise<{ id: 
       </section>
 
       <details className="border border-zinc-200 bg-white p-5">
-        <summary className="cursor-pointer text-lg font-semibold text-zinc-950">点検詳細</summary>
+        <summary className="cursor-pointer text-lg font-semibold text-zinc-950">
+          理解の点検メモ
+        </summary>
         <div className="mt-5 flex flex-col gap-6">
           <AssessmentSummary
             assessmentStatus={log.assessmentStatus}

@@ -80,7 +80,7 @@ export function AssessmentSummary({
 }) {
   return (
     <section className="border border-zinc-200 bg-white p-5">
-      <p className="text-sm font-medium text-zinc-500">点検結果</p>
+      <p className="text-sm font-medium text-zinc-500">理解の状態</p>
       <h2 className="mt-2 text-lg font-semibold text-zinc-950">
         {assessmentStatusLabel[assessmentStatus]}
       </h2>

@@ -6,7 +6,7 @@ export function LogList({ logs }: { logs: LearningLogView[] }) {
   if (logs.length === 0) {
     return (
       <div className="border border-dashed border-zinc-300 bg-white p-8 text-sm text-zinc-600">
-        まだ学びログがありません。話した内容やテキストから、点検つきのログを作成できます。
+        まだ日誌がありません。話したことや書いたことから、点検つきの学び日誌を残せます。
       </div>
     );
   }
@@ -25,27 +25,35 @@ export function LogList({ logs }: { logs: LearningLogView[] }) {
                 {formatDateTime(log.createdAt)}
               </p>
               <h2 className="mt-1 line-clamp-2 text-lg font-semibold text-zinc-950">
-                {log.learningNote.noteBody}
+                {log.title}
               </h2>
             </div>
             <span className="shrink-0 border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-800">
-              {assessmentLabel[log.assessmentStatus]} / 点検 {inspectionCount(log)} 件
+              {assessmentLabel[log.assessmentStatus]} / {inspectionLabel(log)}
             </span>
           </div>
-          <p className="mt-3 line-clamp-2 text-sm leading-6 text-zinc-600">{log.sourceText}</p>
+          <p className="mt-3 line-clamp-3 text-sm leading-6 text-zinc-700">{log.sourceText}</p>
+          <p className="mt-3 line-clamp-2 border-l-2 border-emerald-200 pl-3 text-sm leading-6 text-zinc-500">
+            {log.learningNote.noteBody}
+          </p>
         </Link>
       ))}
     </div>
   );
 }
 
-function inspectionCount(log: LearningLogView) {
-  return (
+function inspectionLabel(log: LearningLogView) {
+  const count =
     log.claims.length +
     log.needsClarification.length +
     log.insufficientExplanations.length +
-    log.factCheckTargets.length
-  );
+    log.factCheckTargets.length;
+
+  if (count === 0) {
+    return "理解メモつき";
+  }
+
+  return `点検メモ ${count}件`;
 }
 
 const assessmentLabel: Record<AssessmentStatus, string> = {
