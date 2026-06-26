@@ -6,7 +6,7 @@ export default function RecordPage() {
     <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-5 py-8 sm:px-8">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-sm font-medium text-emerald-700">mock mode</p>
+          <p className="text-sm font-medium text-emerald-700">学び入力</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-normal text-zinc-950">
             学びログを作成
           </h1>

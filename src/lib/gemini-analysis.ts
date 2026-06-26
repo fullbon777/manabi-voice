@@ -1,8 +1,8 @@
 import { z } from "zod";
 import type { AiInspection, AssessmentStatus, InspectionItem, InterventionType } from "@/lib/types";
-import { createTemplateAnalysis } from "@/lib/template-analysis";
 
 const maxGeminiInputLength = 1500;
+const maxGeminiAttempts = 2;
 
 const inspectionItemSchema = z.object({
   title: z.string(),
@@ -155,16 +155,32 @@ function isQuotaError(status: number, bodyText: string) {
   return status === 429 || /quota|rate limit|resource exhausted/i.test(bodyText);
 }
 
-export async function createGeminiAnalysis(sourceText: string): Promise<AiInspection> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
-
-  if (!apiKey) {
-    throw new Error("GEMINI_API_KEY is not set");
+function getGeminiErrorReason(status: number, bodyText: string) {
+  if (isQuotaError(status, bodyText)) {
+    return "Gemini quota or rate limit was reached";
   }
 
-  const limitedSourceText = sourceText.trim().slice(0, maxGeminiInputLength);
-  const response = await fetch(
+  if (status === 503) {
+    return "Gemini API is temporarily unavailable (status 503)";
+  }
+
+  return `Gemini API failed with status ${status}`;
+}
+
+async function wait(ms: number) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function requestGeminiAnalysis({
+  apiKey,
+  model,
+  sourceText,
+}: {
+  apiKey: string;
+  model: string;
+  sourceText: string;
+}) {
+  return fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
       model,
     )}:generateContent`,
@@ -178,7 +194,7 @@ export async function createGeminiAnalysis(sourceText: string): Promise<AiInspec
         contents: [
           {
             role: "user",
-            parts: [{ text: buildPrompt(limitedSourceText) }],
+            parts: [{ text: buildPrompt(sourceText) }],
           },
         ],
         generationConfig: {
@@ -189,19 +205,44 @@ export async function createGeminiAnalysis(sourceText: string): Promise<AiInspec
       }),
     },
   );
-  const bodyText = await response.text();
+}
 
-  if (!response.ok) {
-    if (isQuotaError(response.status, bodyText)) {
-      return createTemplateAnalysis(sourceText, "Gemini quota or rate limit was reached");
-    }
+export async function createGeminiAnalysis(sourceText: string): Promise<AiInspection> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 
-    return createTemplateAnalysis(sourceText, `Gemini API failed with status ${response.status}`);
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not set");
   }
 
-  const payload = JSON.parse(bodyText) as GeminiResponse;
-  const text = extractText(payload);
-  const parsed = geminiInspectionSchema.parse(parseJsonText(text));
+  const limitedSourceText = sourceText.trim().slice(0, maxGeminiInputLength);
+  let lastErrorReason = "unknown Gemini error";
 
-  return toAiInspection(parsed);
+  for (let attempt = 1; attempt <= maxGeminiAttempts; attempt += 1) {
+    const response = await requestGeminiAnalysis({
+      apiKey,
+      model,
+      sourceText: limitedSourceText,
+    });
+    const bodyText = await response.text();
+
+    if (response.ok) {
+      const payload = JSON.parse(bodyText) as GeminiResponse;
+      const text = extractText(payload);
+      const parsed = geminiInspectionSchema.parse(parseJsonText(text));
+
+      return toAiInspection(parsed);
+    }
+
+    lastErrorReason = getGeminiErrorReason(response.status, bodyText);
+
+    if (response.status === 503 && attempt < maxGeminiAttempts) {
+      await wait(1200);
+      continue;
+    }
+
+    break;
+  }
+
+  throw new Error(lastErrorReason);
 }

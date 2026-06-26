@@ -212,7 +212,7 @@ export function RecordForm() {
                 onClick={transcribeRecording}
                 type="button"
               >
-                {isTranscribing ? "mock 文字起こし中" : "mock 文字起こし"}
+                {isTranscribing ? "文字起こし中" : "文字起こし"}
               </button>
             </div>
           </div>
@@ -225,7 +225,7 @@ export function RecordForm() {
         ) : null}
         {recordingStatus === "recorded" ? (
           <p className="border border-zinc-200 bg-zinc-50 p-3 text-sm text-zinc-700">
-            録音が完了しました。再生で確認してから mock 文字起こしできます。
+            録音が完了しました。再生で確認してから文字起こしできます。
           </p>
         ) : null}
         {recordingError ? (
@@ -254,7 +254,7 @@ export function RecordForm() {
           disabled={isSubmitting || sourceText.trim().length === 0}
           type="submit"
         >
-          {isSubmitting ? "点検して保存中" : "mock 点検して保存"}
+          {isSubmitting ? "点検して保存中" : "点検して保存"}
         </button>
       </div>
       {error ? (

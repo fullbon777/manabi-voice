@@ -48,11 +48,6 @@ export default async function LogDetailPage({ params }: { params: Promise<{ id: 
       <details className="border border-zinc-200 bg-white p-5">
         <summary className="cursor-pointer text-lg font-semibold text-zinc-950">点検詳細</summary>
         <div className="mt-5 flex flex-col gap-6">
-          <section className="border border-zinc-200 bg-white p-5">
-            <p className="text-sm font-medium text-zinc-500">復元内容</p>
-            <p className="mt-3 text-sm leading-7 text-zinc-700">{log.reconstructedContent}</p>
-          </section>
-
           <AssessmentSummary
             assessmentStatus={log.assessmentStatus}
             interventionType={log.interventionType}

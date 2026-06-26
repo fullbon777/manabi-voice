@@ -1,6 +1,6 @@
 import type { AiInspection } from "@/lib/types";
 import { createGeminiAnalysis } from "@/lib/gemini-analysis";
-import { reserveGeminiDailyUse } from "@/lib/gemini-usage";
+import { getGeminiDailyUse, recordGeminiDailyUse } from "@/lib/gemini-usage";
 import { createMockAnalysis } from "@/lib/mock-analysis";
 import { createTemplateAnalysis } from "@/lib/template-analysis";
 
@@ -19,7 +19,7 @@ export async function createAiInspection(sourceText: string, date: string): Prom
     return createTemplateAnalysis(sourceText, "GEMINI_API_KEY is not set");
   }
 
-  const usage = await reserveGeminiDailyUse(date);
+  const usage = await getGeminiDailyUse(date);
 
   if (!usage.allowed) {
     return createTemplateAnalysis(
@@ -29,7 +29,11 @@ export async function createAiInspection(sourceText: string, date: string): Prom
   }
 
   try {
-    return await createGeminiAnalysis(sourceText);
+    const analysis = await createGeminiAnalysis(sourceText);
+
+    await recordGeminiDailyUse(date);
+
+    return analysis;
   } catch (error) {
     const reason = error instanceof Error ? error.message : "unknown Gemini error";
 

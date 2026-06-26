@@ -31,7 +31,7 @@ async function writeUsage(state: UsageState) {
   await writeFile(usageFile, JSON.stringify(state), "utf8");
 }
 
-export async function reserveGeminiDailyUse(date: string) {
+export async function getGeminiDailyUse(date: string) {
   const current = await readUsage();
   const state = current?.date === date ? current : { date, count: 0 };
 
@@ -39,7 +39,14 @@ export async function reserveGeminiDailyUse(date: string) {
     return { allowed: false, count: state.count, limit: dailyGeminiLimit };
   }
 
+  return { allowed: true, count: state.count, limit: dailyGeminiLimit };
+}
+
+export async function recordGeminiDailyUse(date: string) {
+  const current = await readUsage();
+  const state = current?.date === date ? current : { date, count: 0 };
   const next = { date, count: state.count + 1 };
+
   await writeUsage(next);
 
   return { allowed: true, count: next.count, limit: dailyGeminiLimit };
