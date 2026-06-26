@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 
-const dailyGeminiLimit = 3;
+const dailyGeminiLimit = 5;
 const usageDirectory = join(tmpdir(), "manabi-voice");
 const usageFile = join(usageDirectory, "gemini-usage.json");
 
